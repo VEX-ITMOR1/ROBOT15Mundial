@@ -316,6 +316,11 @@ void opcontrol() {
     {
       gancho.toggle();
     }
+    
+    if(master.get_digital_new_press(DIGITAL_L2))
+    {
+      cargador.toggle();
+    }
 
 if (master.get_digital(DIGITAL_Y)) {
       //mete bloques
