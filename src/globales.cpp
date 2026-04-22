@@ -3,12 +3,13 @@
 #include "pros/optical.hpp"
 #include "pros/rotation.hpp"
 
-pros::Motor intake11W(4, pros::v5::MotorGears::blue);
-pros::Motor palanca1(1, pros::v5::MotorGears::red);
-pros::Motor palanca2(2, pros::v5::MotorGears::red);
+pros::Motor intake1(10, pros::v5::MotorGears::blue);
+pros::Motor intake2(-8, pros::v5::MotorGears::blue);
+pros::Motor rollo(20, pros::v5::MotorGears::blue);
 
-pros::adi::Pneumatics cargador('F', false);
-pros::adi::Pneumatics lift1('E', false);
-pros::adi::Pneumatics lift2('G', false);
-pros::adi::Pneumatics tapa('C', false);
-pros::adi::Pneumatics gancho('D', false);
+
+pros::adi::Pneumatics cargador('E', false);
+pros::adi::Pneumatics gancho1('D', false);
+pros::adi::Pneumatics gancho2('H', false);
+pros::adi::Pneumatics puerta('C', false);
+

@@ -12,51 +12,14 @@
 // For installation, upgrading, documentations, and tutorials, check out our website!
 // https://ez-robotics.github.io/EZ-Template/
 /////
-const int numStates = 2;
-int states[numStates] = {0, 700};
-int currState = 0;
-int target = 0; // Es mejor inicializarlo en states[0] para que coincida
 
-void nextState() {
-  currState += 1;
-  if(currState == 2) {
-    currState = 0;
-  }
-  target = states[currState];
-}
-
-
-void liftControl() {
-  // Un Kp de 0.2 a 0.4 es mucho mejor para un rango de 700 ticks.
-  // Así el brazo empezará a frenar suavemente cuando esté cerca del objetivo.
-  double kp = 0.4; 
-
-  // 1. Calculamos el error. 
-  // Si target=0 y pos=700, el error es -700 (negativo = reversa)
-  // Si target=700 y pos=0, el error es 700 (positivo = adelante)
-  double error2 = target - palanca2.get_position();
-
-  // 2. Multiplicamos por la constante proporcional
-  double voltaje = kp * error2;
-
-  // 3. Limitamos el valor para que nunca pase de 127 o baje de -127
-  if (voltaje > 127) {
-    voltaje = 127;
-  } else if (voltaje < -127) {
-    voltaje = -80;
-  }
-
-  // 4. Mandamos la señal limpia y controlada al motor
-  palanca2.move(voltaje); 
-  palanca1.move(-voltaje);
-}
 // Chassis constructor
 ez::Drive chassis(
     // These are your drive motors, the first motor is used for sensing!
-    { -8, -9, -10},     // Left Chassis Ports (negative port will reverse it!)
-    {12, 19, 20},  // Right Chassis Ports (negative port will reverse it!)
+    { -11, -9, -13},     // Left Chassis Ports (negative port will reverse it!)
+    {12, 15, 17},  // Right Chassis Ports (negative port will reverse it!)
 
-    3,      // IMU Port
+    1,      // IMU Port
     3.25,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
     450);   // Wheel RPM = cartridge * (motor gear / wheel gear)
 
@@ -123,12 +86,7 @@ void initialize() {
   chassis.initialize();
   ez::as::initialize();
   master.rumble(chassis.drive_imu_calibrated() ? "." : "---");
-  pros::Task liftControlTask([]{
-      while(true){
-        liftControl();
-        pros::delay(10);
-      }
-    });
+
 
 }
 
@@ -301,43 +259,72 @@ void opcontrol() {
     
     chassis.opcontrol_arcade_standard(ez::SINGLE);  // Standard single arcade
 
-     if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)) {
-   tapa.toggle();
-      nextState();
+   
+
+  
+    if(master.get_digital_new_press(DIGITAL_B))
+    {
+        puerta.toggle();
     }
 
-    if(master.get_digital_new_press(DIGITAL_R1))
+  
+
+    if(master.get_digital_new_press(DIGITAL_A))
     {
-      lift1.toggle();
-      lift2.toggle();
+      gancho1.toggle();
+      gancho2.toggle();
     }
 
-    if(master.get_digital_new_press(DIGITAL_R2))
+        if(master.get_digital(DIGITAL_UP))
     {
-      gancho.toggle();
+   cargador.retract();
     }
     
-    if(master.get_digital_new_press(DIGITAL_L2))
+        if(master.get_digital(DIGITAL_DOWN))
     {
-      cargador.toggle();
+   cargador.extend();
     }
 
-if (master.get_digital(DIGITAL_Y)) {
+if (master.get_digital(DIGITAL_L1)) {
       //mete bloques
         
-        intake11W.move(-127);
-        
-      } else if (master.get_digital(DIGITAL_A)) {
+        rollo.move(-127);
+          
+      } else if (master.get_digital(DIGITAL_L2)) {
 
         //saca bloques
        
-        intake11W.move(127);
-     
+        rollo.move(127);
+    
       } else {
         // Si no presionas el botón, se detiene
        
-        intake11W.move(0);
+      
+       rollo.move(0);
        
+          
+          
+        }
+
+        if (master.get_digital(DIGITAL_R1)) {
+      //mete bloques
+        
+        intake1.move(-127);
+          
+        intake2.move(-127);
+      } else if (master.get_digital(DIGITAL_R2)) {
+
+        //saca bloques
+       
+        intake1.move(127);
+     intake2.move(127);
+      } else {
+        // Si no presionas el botón, se detiene
+       
+        intake1.move(0);
+       intake2.move(0);
+       
+          
           
         }
  
@@ -349,7 +336,7 @@ if (master.get_digital(DIGITAL_Y)) {
     // . . .
     // Put more user control code here!
     // . . .
-
+  pros::delay(20); 
     pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   }
 }

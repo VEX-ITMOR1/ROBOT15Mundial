@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "15-AZUL-Q",
+    "project_name": "24-AZUL-Q",
     "target": "v5",
     "templates": {
       "EZ-Template": {
@@ -424,7 +424,7 @@
       }
     },
     "upload_options": {
-      "description": "15 - AZUL -Matches de calificacion",
+      "description": "24 - AZUL -Matches de calificacion",
       "icon": "pizza"
     },
     "use_early_access": false
