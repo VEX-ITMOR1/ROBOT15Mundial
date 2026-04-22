@@ -27,9 +27,9 @@ void default_constants() {
   chassis.pid_odom_boomerang_constants_set(5.8, 0.0, 32.5);  // Angular control for boomerang motions
 
   // Exit conditions
-  chassis.pid_turn_exit_condition_set(90_ms, 3_deg,250_ms,7_deg,500_ms,500_ms);
+  chassis.pid_turn_exit_condition_set(100_ms, 1_deg,250_ms,2_deg,500_ms,500_ms);
   chassis.pid_swing_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 500_ms, 500_ms);
-  chassis.pid_drive_exit_condition_set(90_ms, 1_in, 250_ms, 3_in, 500_ms, 500_ms);
+  chassis.pid_drive_exit_condition_set(90_ms, 1_in, 250_ms, 2_in, 500_ms, 500_ms);
   
   // Exit conditions
   chassis.pid_odom_turn_exit_condition_set(90_ms, 1_deg, 250_ms, 2_deg, 500_ms, 750_ms);
@@ -65,9 +65,7 @@ void azul_derecha() {
   // The third parameter is a boolean (true or false) for enabling/disabling a slew at the start of drive motions
   // for slew, only enable it when the drive distance is greater than the slew distance + a few inches
 
-  chassis.odom_xyt_set(0_in, 0_in, 0_deg);
-// Drive forward to (0, 36) forward
-  chassis.pid_odom_set({{0_in, 32.5_in}, fwd, 100});
+  chassis.pid_odom_set(28_in, 110, true);  // Slew will be enabled for this motion
   chassis.pid_wait();
 
   chassis.pid_turn_set(90_deg, 50);
@@ -77,14 +75,12 @@ void azul_derecha() {
 
   intake11W.move(-127);
 
-  chassis.pid_odom_set({{14_in, 32.5_in}, fwd, 35});
+  chassis.pid_odom_set(6_in, 35, true);  // Slew will be enabled for this motion
   chassis.pid_wait();
 
   
   pros::delay(1000);
-     
-  chassis.pid_odom_set({{8_in, 30_in}, fwd, 35});
-  chassis.pid_wait();
+
 
 
   //chassis.pid_drive_set(24_in, DRIVE_SPEED, true);
