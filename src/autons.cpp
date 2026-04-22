@@ -67,7 +67,7 @@ void azul_derecha() {
 
   chassis.odom_xyt_set(0_in, 0_in, 0_deg);
 // Drive forward to (0, 36) forward
-  chassis.pid_odom_set({{0_in, 30_in}, fwd, 100});
+  chassis.pid_odom_set({{0_in, 32.5_in}, fwd, 100});
   chassis.pid_wait();
 
   chassis.pid_turn_set(90_deg, 50);
@@ -75,15 +75,16 @@ void azul_derecha() {
 
   cargador.extend();
 
-  intake11W.move(127);
+  intake11W.move(-127);
 
-  chassis.pid_odom_set({{10_in, 30_in}, fwd, 40});
+  chassis.pid_odom_set({{14_in, 32.5_in}, fwd, 35});
   chassis.pid_wait();
 
-  intake11W.move(-127);
-   pros::delay(1000);
-     intake11W.move(0);
-
+  
+  pros::delay(1000);
+     
+  chassis.pid_odom_set({{8_in, 30_in}, fwd, 35});
+  chassis.pid_wait();
 
 
   //chassis.pid_drive_set(24_in, DRIVE_SPEED, true);

@@ -66,7 +66,7 @@ void liftControl() {
   // 1. Calculamos el error. 
   // Si target=0 y pos=700, el error es -700 (negativo = reversa)
   // Si target=700 y pos=0, el error es 700 (positivo = adelante)
-  double error2 = target - palanca2.get_position();
+  double error2 = target + palanca1.get_position();
 
   // 2. Multiplicamos por la constante proporcional
   double voltaje = kp * error2;
