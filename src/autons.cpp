@@ -1,6 +1,8 @@
 #include "autons.hpp"
+
 #include <algorithm>
 #include "main.h"
+#include "globales.hpp"
 #include "subsystems.hpp"
 /////
 // For installation, upgrading, documentations, and tutorials, check out our website!
@@ -19,8 +21,8 @@ void default_constants() {
   // P, I, D, and Start I
   chassis.pid_drive_constants_set(20.0, 0.0, 100.0);         // Fwd/rev constants, used for odom and non odom motions
   chassis.pid_heading_constants_set(11.0, 0.0, 20.0);        // Holds the robot straight while going forward without odom
-  chassis.pid_turn_constants_set(3.0, 0.05, 20.0, 15.0);     // Turn in place constants
-  chassis.pid_swing_constants_set(6.0, 0.0, 65.0);           // Swing constants
+  chassis.pid_turn_constants_set(2.0, 0.07, 15.0, 15.0);     // Turn in place constants
+  chassis.pid_swing_constants_set(4.0, 0.0, 0.0);           // Swing constants
   chassis.pid_odom_angular_constants_set(6.5, 0.0, 52.5);    // Angular control for odom motions
   chassis.pid_odom_boomerang_constants_set(5.8, 0.0, 32.5);  // Angular control for boomerang motions
 
@@ -28,8 +30,11 @@ void default_constants() {
   chassis.pid_turn_exit_condition_set(90_ms, 3_deg,250_ms,7_deg,500_ms,500_ms);
   chassis.pid_swing_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 500_ms, 500_ms);
   chassis.pid_drive_exit_condition_set(90_ms, 1_in, 250_ms, 3_in, 500_ms, 500_ms);
-  chassis.pid_odom_turn_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 500_ms, 750_ms);
-  chassis.pid_odom_drive_exit_condition_set(90_ms, 1_in, 250_ms, 3_in, 500_ms, 750_ms);
+  
+  // Exit conditions
+  chassis.pid_odom_turn_exit_condition_set(90_ms, 1_deg, 250_ms, 2_deg, 500_ms, 750_ms);
+  chassis.pid_odom_drive_exit_condition_set(90_ms, 1_in, 250_ms, 2_in, 500_ms, 750_ms);
+
   chassis.pid_turn_chain_constant_set(3_deg);
   chassis.pid_swing_chain_constant_set(5_deg);
   chassis.pid_drive_chain_constant_set(3_in);
@@ -53,6 +58,45 @@ void default_constants() {
 ///
 // Drive Example
 ///
+
+void azul_derecha() {
+  // The first parameter is target inches
+  // The second parameter is max speed the robot will drive at
+  // The third parameter is a boolean (true or false) for enabling/disabling a slew at the start of drive motions
+  // for slew, only enable it when the drive distance is greater than the slew distance + a few inches
+
+  chassis.odom_xyt_set(0_in, 0_in, 0_deg);
+// Drive forward to (0, 36) forward
+  chassis.pid_odom_set({{0_in, 30_in}, fwd, 100});
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(90_deg, 50);
+  chassis.pid_wait();
+
+  cargador.extend();
+
+  intake11W.move(127);
+
+  chassis.pid_odom_set({{10_in, 30_in}, fwd, 40});
+  chassis.pid_wait();
+
+  intake11W.move(-127);
+   pros::delay(1000);
+     intake11W.move(0);
+
+
+
+  //chassis.pid_drive_set(24_in, DRIVE_SPEED, true);
+ // chassis.pid_wait();
+
+ // chassis.pid_drive_set(-12_in, DRIVE_SPEED);
+ // chassis.pid_wait();
+
+  //chassis.pid_drive_set(-12_in, DRIVE_SPEED);
+  //chassis.pid_wait();
+}
+
+
 void drive_example() {
   // The first parameter is target inches
   // The second parameter is max speed the robot will drive at

@@ -2,6 +2,7 @@
 
 void default_constants();
 
+void azul_derecha();
 void drive_example();
 void turn_example();
 void drive_and_turn();

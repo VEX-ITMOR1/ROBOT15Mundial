@@ -12,3 +12,4 @@ pros::adi::Pneumatics lift1('E', false);
 pros::adi::Pneumatics lift2('G', false);
 pros::adi::Pneumatics tapa('C', false);
 pros::adi::Pneumatics gancho('D', false);
+pros::ADIDigitalIn limit_switch('A');

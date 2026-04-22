@@ -12,6 +12,9 @@
 // For installation, upgrading, documentations, and tutorials, check out our website!
 // https://ez-robotics.github.io/EZ-Template/
 /////
+
+bool switch_fue_presionado = false; // Variable de seguridad para no resetear en bucle
+
 const int numStates = 2;
 int states[numStates] = {0, 700};
 int currState = 0;
@@ -25,11 +28,40 @@ void nextState() {
   target = states[currState];
 }
 
-
 void liftControl() {
+  // --- NUEVO: LÓGICA DEL LIMIT SWITCH ---
+  bool switch_estado = limit_switch.get_value();
+
+  // Si el sensor está presionado Y nuestro objetivo es estar abajo (0)
+  if (switch_estado == 1 && target == 0) {
+    
+    // Si es la primera fracción de segundo que toca el sensor...
+    if (!switch_fue_presionado) {
+      palanca1.brake(); // Frena de golpe (aplica el HOLD)
+      palanca2.brake();
+      
+      palanca1.tare_position(); // Resetea encoder a 0
+      palanca2.tare_position(); // Resetea encoder a 0
+      
+      switch_fue_presionado = true;
+    }
+    
+    // Mientras siga presionado y el target sea 0, le mandamos 0 voltaje 
+    // y salimos de la función (return) para que el PID de abajo NO se ejecute y no pelee.
+    palanca1.move(0);
+    palanca2.move(0);
+    return; 
+    
+  } else {
+    // Si la palanca subió y soltó el botón, reseteamos nuestra variable de seguridad
+    switch_fue_presionado = false;
+  }
+  // --------------------------------------
+
+  // --- TU PID ORIGINAL ---
   // Un Kp de 0.2 a 0.4 es mucho mejor para un rango de 700 ticks.
   // Así el brazo empezará a frenar suavemente cuando esté cerca del objetivo.
-  double kp = 0.4; 
+  double kp = 0.5; 
 
   // 1. Calculamos el error. 
   // Si target=0 y pos=700, el error es -700 (negativo = reversa)
@@ -43,7 +75,7 @@ void liftControl() {
   if (voltaje > 127) {
     voltaje = 127;
   } else if (voltaje < -127) {
-    voltaje = -80;
+    voltaje = -90;
   }
 
   // 4. Mandamos la señal limpia y controlada al motor
@@ -66,7 +98,7 @@ ez::Drive chassis(
 // - `2.75` is the wheel diameter
 // - `4.0` is the distance from the center of the wheel to the center of the robot
 // ez::tracking_wheel horiz_tracker(8, 2.75, 4.0);  // This tracking wheel is perpendicular to the drive wheels
-ez::tracking_wheel vert_tracker(18, 2, 4.0);   // This tracking wheel is parallel to the drive wheels
+ez::tracking_wheel vert_tracker(-18, 2, 0.47);   // This tracking wheel is parallel to the drive wheels
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -87,7 +119,7 @@ void initialize() {
   // Look at your vertical tracking wheel and decide if it's to the left or right of the center of the robot
   //  - change `left` to `right` if the tracking wheel is to the right of the centerline
   //  - ignore this if you aren't using a vertical tracker
-  // chassis.odom_tracker_left_set(&vert_tracker);
+   chassis.odom_tracker_left_set(&vert_tracker);
 
   // Configure your chassis controls
   chassis.opcontrol_curve_buttons_toggle(true);   // Enables modifying the controller curve with buttons on the joysticks
@@ -103,6 +135,7 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
+      {"ODOM AZUL\n\nCALIFICACION AZUL", azul_derecha},
       {"Drive\n\nDrive forward and come back", drive_example},
       {"Turn\n\nTurn 3 times.", turn_example},
       {"Drive and Turn\n\nDrive forward, turn, come back", drive_and_turn},
